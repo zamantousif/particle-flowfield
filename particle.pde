@@ -2,18 +2,32 @@ class Particle{
   PVector pos;
   PVector vel;
   PVector acc;
+  PVector force;
+  PVector[] vArr;
+  int normPosX;
+  int normPosY;
+  int res;
+  int index;
+  int rowsize;
+  int colsize;
+  int maxspeed = 2;
   
-  
-  Particle(){
+  Particle(int rows, int cols, int scl, PVector[] vectorArr){
     pos = new PVector(random(width),random(height));
-    vel = PVector.random2D();
+    //vel = PVector.random2D();
+    vel = new PVector(0,0);
     acc = new PVector(0,0);
-    
+    res = scl;
+    rowsize = rows;
+    colsize = cols;
+    vArr = new PVector[rows*cols];
+    vArr = vectorArr;
     //update();
   }
   
   void update(){
     vel.add(acc);
+    vel.limit(maxspeed);
     pos.add(vel);
     acc.mult(0);
     
@@ -25,7 +39,7 @@ class Particle{
   
   void display(){
     stroke(0);
-    strokeWeight(3);
+    strokeWeight(4);
     point(pos.x,pos.y);
   }
   
@@ -43,8 +57,17 @@ class Particle{
     else if (pos.y < 0){
       pos.y= height;
     }
-    
-    
+  }
+  
+  void follow(PVector[] vArr){
+    normPosX = floor(pos.x/res);
+    normPosY = floor(pos.y/res);
+    //convert 2D array to a 1D array
+    index = (normPosX + normPosY*rowsize);
+    if (index < rowsize * colsize){
+      force = vArr[index];
+    }
+    applyForce(force);
   }
    
 }

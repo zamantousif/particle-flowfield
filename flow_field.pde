@@ -3,17 +3,17 @@ class FlowField{
   
   PVector[][] field;
   
-  FlowField(float offs, int scl, int xsize, int ysize){
+  FlowField(float offs, int scl, int xsize, int ysize, PVector[] vectorArr){
     //set resolution to have one PVector object for every 10 pixels
     //resolution = 10;
     //rows = height/resolution;
     //cols = width/resolution;
     field = new PVector[xsize][ysize];
-    init(offs, scl);
+    init(offs, scl, vectorArr);
   }
   
   //init method
-  void init(float offs, int scl){
+  void init(float offs, int scl, PVector[] vectorArr){
     PVector v;
     float xoff = 0;
     for (int y=0;y<rows;y++){
@@ -28,12 +28,20 @@ class FlowField{
         
         //map polar to cartesian coordinates
         field[x][y] = new PVector(cos(angle),sin(angle));
+        field[x][y].setMag(5);
+        
+        //index and store the vector
+        int index = (x+y*cols);
+        vectorArr[index] = field[x][y];
+        
         yoff += offs;
         //field[x][y] = new PVector(1,0);
         //fill(theta);
         //rect(x*scl,y*scl,scl,scl);
         stroke(0,50);
         strokeWeight(1);
+        
+        //drawing the field
         push();
         translate(x*scl, y*scl);
         rotate(field[x][y].heading());
@@ -41,10 +49,12 @@ class FlowField{
         line(0,0,scl,0);
         pop();
         
+        
       }
       xoff += offs;
     }
-    //zoff += 0.005;
+    //add the third dimension of time
+    zoff += 0.005;
   }
       
   PVector lookup(PVector lookup) {
